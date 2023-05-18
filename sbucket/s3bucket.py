@@ -1,16 +1,14 @@
-import abc
 import datetime
 import json
 import pytz
 import os
 import boto3
-import botocore
 import logging
-from urllib import parse
-from devtools import debug
+# from urllib import parse
+# from devtools import debug
+from .s3file import S3File, LocalFile, get_timestamp, hash_file
 
 log = logging.getLogger(__name__)
-
 
 
 class S3Bucket:

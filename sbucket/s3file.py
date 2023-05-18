@@ -3,11 +3,8 @@ import datetime
 import json
 import pytz
 import os
-import boto3
 import botocore
 import logging
-from urllib import parse
-from devtools import debug
 
 log = logging.getLogger(__name__)
 
@@ -43,10 +40,6 @@ class File(abc.ABC):
     def __init__(self, path) -> None:
         super().__init__()
         self.path = path
-
-    @abc.abstractmethod
-    def exists(self):
-        pass
 
     @property
     @abc.abstractmethod
@@ -89,7 +82,7 @@ class LocalFile(File):
 
 
 class S3File(File):
-    def __init__(self, bucket: 'S3Bucket', path):
+    def __init__(self, bucket, path):
         super().__init__(path)
 
         self.bucket = bucket
