@@ -50,7 +50,7 @@ jobs:
 
       - run: pip install -r requirements.txt
       - run: pip list
-      - run: pytest -vv --cov=smart-bucket tests
+      - run: pytest -vv --cov=sbucket tests
 
       - name: Upload coverage to codecov.io
         uses: codecov/codecov-action@v3
@@ -78,8 +78,8 @@ jobs:
           rm -rf build
 
       - run: pip install -U wheel packaging twine
-      - run: pip install -r requirements.txt
-      - run: python setup.py sdist bdist_wheel
+#      - run: pip install -r requirements.txt
+      - run: python -m build
 
       - name: Upload packages as artifact
         uses: actions/upload-artifact@v3
