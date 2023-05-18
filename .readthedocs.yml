@@ -13,6 +13,8 @@ build:
         python: "3.11"
 
     commands:
+        - pip install -U 'setuptools>=61.0'
+        - python -m pip install -U pip
         - pip install -r requirements.txt
         - pip install -e .
         - pip install -r docs/requirements.txt
