@@ -79,7 +79,7 @@ jobs:
           rm -rf dist
           rm -rf build
 
-      - run: pip install -U wheel packaging twine
+      - run: pip install -U build twine
 #      - run: pip install -r requirements.txt
       - run: python -m build
 
