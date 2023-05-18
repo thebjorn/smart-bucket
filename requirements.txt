@@ -5,6 +5,3 @@ devtools
 
 pytest
 pytest-cov
-
-build
-sphinx
