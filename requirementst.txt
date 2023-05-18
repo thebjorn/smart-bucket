@@ -1,0 +1,10 @@
+boto3
+pytz
+
+devtools
+
+pytest
+pytest-cov
+
+build
+twine

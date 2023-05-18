@@ -1,0 +1,11 @@
+_schema: https://static.datakortet.no/schema/dkbuild.schema.yaml
+
+package:
+  name: smart-bucket
+  package_name: sbucket
+  description: Bidirectional synchronization between local directory and s3 bucket.
+  version: 0.1.0
+  created: 2023
+
+build:
+  venv: sbucket

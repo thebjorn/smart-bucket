@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "smart-bucket"
+version = "0.1.0"
+description = "Bidirectional synchronization between local directory and s3 bucket."
+keywords = ["s3", "sync", "aws"]
+authors = [
+    {name = "Bjorn Pettersen", email = "bp@datakortet.no" }
+]
+requires-python = ">=3.7"
+license = {file = "LICENSE"}
+readme = "README.rst"
+#long_description = "README.rst"
+#long_description_content_type = "text/x-rst"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Utilities",
+]
+dependencies = [
+    "boto3",
+    "click",
+    "click-log",
+    "click-spinner",
+    "click-threading",
+    "humanize",
+    "pyyaml",
+    "smart-open",
+    "tqdm",
+]
+
+[project.urls]
+homepage = "https://github.com/thebjorn/smart-bucket"
+repository = "https://github.com/thebjorn/smart-bucket"
+documentation = "https://smart-bucket.readthedocs.io/en/latest/"
+issues = "https://github.com/thebjorn/smart-bucket/issues"
+
+[project.scripts]
+sbkt = "sbucket.main:sbkt_command"
+
+[tool.setuptools.packages.find]
+include = ["sbucket", "sbucket.*"]
+exclude = ["tests", "tests.*"]
