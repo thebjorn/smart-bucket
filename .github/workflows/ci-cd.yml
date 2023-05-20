@@ -18,7 +18,7 @@ jobs:
       - name: setup directories
         shell: bash
         run: |
-          mkdir -p $PIP_CACHE_DIR
+#          mkdir -p $PIP_CACHE_DIR
           mkdir -p $LINTDIR
       - uses: actions/setup-python@v4
         with:
@@ -45,9 +45,9 @@ jobs:
     steps:
       # setup environment
       - uses: actions/checkout@v3
-      - name: setup global directories
-        shell: bash
-        run: mkdir -p $PIP_CACHE_DIR
+#      - name: setup global directories
+#        shell: bash
+#        run: mkdir -p $PIP_CACHE_DIR
       - uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
@@ -72,9 +72,9 @@ jobs:
     steps:
       # setup environment
       - uses: actions/checkout@v3
-      - name: setup directories
-        shell: bash
-        run: mkdir -p $PIP_CACHE_DIR
+#      - name: setup directories
+#        shell: bash
+#        run: mkdir -p $PIP_CACHE_DIR
       - uses: actions/setup-python@v4
         with:
           python-version: '3.9'
