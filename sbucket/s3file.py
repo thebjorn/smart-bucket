@@ -9,6 +9,33 @@ import logging
 log = logging.getLogger(__name__)
 
 
+# def set_ntfs_extended_attributes(path, attrs):
+#     """Set the NTFS extended attributes of the file at path.
+#     """
+#     import win32api
+#     import win32security
+#     import ntsecuritycon as con
+#     import pywintypes
+#
+#     # Get the file's security descriptor
+#     sd = win32security.GetFileSecurity(path, win32security.DACL_SECURITY_INFORMATION)
+#
+#     # Create a new security descriptor
+#     sd_new = win32security.SECURITY_DESCRIPTOR()
+#
+#     # Get the DACL from the security descriptor
+#     dacl = sd.GetSecurityDescriptorDacl()
+#
+#     # Add the ACEs to the DACL
+#     for ace in attrs:
+#         dacl.AddAccessAllowedAce(win32security.ACL_REVISION_DS, con.FILE_GENERIC_READ, ace)
+#
+#     # Set the DACL in the new security descriptor
+#     sd_new.SetSecurityDescriptorDacl(1, dacl, 0)
+#
+#     # Set the new security descriptor in the file
+#     win32security.SetFileSecurity(path, win32security.DACL_SECURITY_INFORMATION, sd_new)
+
 def hash_file(fname):
     import hashlib
     h = hashlib.md5()
@@ -24,6 +51,12 @@ def local_timezone():
     return 'CET'
 
 
+def datetime_to_ns(dt):
+    """Return the number of nanoseconds since the epoch.
+    """
+    return int(dt.timestamp() * 1e9)
+
+
 def get_timestamp(path) -> datetime.datetime:
     """Return the timestamp of the file at path with no fractional seconds.
     """
@@ -37,14 +70,23 @@ def get_timestamp(path) -> datetime.datetime:
 
 
 class File(abc.ABC):
-    def __init__(self, path) -> None:
+    def __init__(self, path: str) -> None:
         super().__init__()
-        self.path = path
+        self.path: str = str(path)
+
+    def __str__(self):
+        return self.path
+
+    __repr__ = __str__
 
     @property
     @abc.abstractmethod
     def exists(self):
         pass
+
+    @property
+    def missing(self):
+        return not self.exists
 
     @property
     @abc.abstractmethod
@@ -63,6 +105,11 @@ class File(abc.ABC):
 
 
 class LocalFile(File):
+    def __init__(self, path, root=None) -> None:
+        if root is not None:
+            path = os.path.relpath(path, root)
+        super().__init__(path)
+
     @property
     def exists(self) -> bool:
         return os.path.exists(self.path)
@@ -98,6 +145,7 @@ class S3File(File):
             try:
                 self._exists = self._obj.last_modified is not None
             except botocore.exceptions.ClientError as e:
+                log.info("Error checking if file (%s) exists: %s", self.path, e)
                 if e.response['Error']['Code'] == "404":
                     self._exists = False
                 else:
@@ -127,6 +175,10 @@ class S3File(File):
         self._obj.download_file(self.path)
         localfile = LocalFile(self.path)
         localfile.timestamp = self.timestamp
+
+    def upload(self):
+        self.bucket.copy_to_s3(self.path)
+        self._exists = True
 
     def update_tags(self, tags):
         self._ensure_exists()

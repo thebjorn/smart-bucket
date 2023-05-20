@@ -25,3 +25,8 @@ TODO:
 
 - [ ] describe sync algorithm
 - [ ] describe deletion problem
+
+Ideas:
+------
+
+- [ ] use extended file attrs to store bucket name for sync?

@@ -10,6 +10,7 @@ Welcome to smart-bucket's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+.. include:: ./merging.rst
 .. include:: ./modules.rst
 
 Indices and tables

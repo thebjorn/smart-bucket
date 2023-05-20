@@ -20,7 +20,7 @@ class S3Bucket:
         return self.bucket_name
 
     def file(self, path):
-        return S3File(self, path)
+        return S3File(self, str(path))
 
     def list_files(self):
         """Return a list of all files in the S3 bucket.
@@ -30,8 +30,11 @@ class S3Bucket:
         for obj in bucket.objects.all():
             yield obj.key
 
-    def timestamp(self, path):
-        """Return the timestamp of the file at path in the S3 bucket.
+    def __iter__(self):
+        yield from self.list_files()
+
+    def last_modified(self, path):
+        """Return the last modified time of the file at path in the S3 bucket.
         """
         s3 = boto3.resource('s3')
         bucket = s3.Bucket(self.bucket_name)
