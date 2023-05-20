@@ -1,5 +1,5 @@
 import os
-from abc import ABC, abstractmethod
+from abc import ABC
 
 from dkfileutils.path import Path
 
@@ -15,7 +15,6 @@ class FileTree(ABC):
 class LocalFileTree(FileTree):
     def __init__(self, root) -> None:
         super().__init__(root)
-
 
     @property
     def exists(self) -> bool:
@@ -51,6 +50,3 @@ class LocalFileTree(FileTree):
         """
         with open(path, 'r') as f:
             return f.read()
-
-
-
