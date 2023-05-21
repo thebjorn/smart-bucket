@@ -1,7 +1,4 @@
-import datetime
 import json
-import pytz
-import os
 import botocore
 import logging
 
@@ -49,18 +46,6 @@ def datetime_to_ns(dt):
     """Return the number of nanoseconds since the epoch.
     """
     return int(dt.timestamp() * 1e9)
-
-
-def get_timestamp(path) -> datetime.datetime:
-    """Return the timestamp of the file at path with no fractional seconds.
-    """
-    timestamp = os.path.getmtime(path)
-    # tz = pytz.timezone(local_timezone())
-    tz = pytz.timezone('UTC')
-    dt = datetime.datetime.fromtimestamp(timestamp)
-    dt = datetime.datetime(dt.year, dt.month, dt.day, dt.hour, dt.minute,
-                           dt.second)
-    return tz.localize(dt)
 
 
 class S3File(File):

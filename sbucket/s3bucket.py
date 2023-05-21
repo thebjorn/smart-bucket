@@ -7,11 +7,12 @@ import logging
 
 from yamldirs.yamldirs_cmd import files2yaml
 
-from .baseobj import File, FileTree
+from .baseobj import File, FileTree, get_timestamp
+from .cache import BucketObject
 from .environment import *
 # from urllib import parse
 # from devtools import debug
-from .s3file import S3File, get_timestamp
+from .s3file import S3File
 from .localfile import hash_file, LocalFile
 from .utils import files2tree, tree2yaml
 
@@ -47,11 +48,16 @@ class S3Bucket(FileTree):
     def file(self, path):
         return S3File(self, str(path))
 
+    def all(self):
+        for obj in self.bucket.objects.all():
+            yield BucketObject(self, summary=obj)
+
     def list_files(self):
         """Return a list of all files in the S3 bucket.
         """
         self._cache = {}
         for obj in self.bucket.objects.all():
+            # XXX: obj is here a s3.ObjectSummary (e_tag, key, last_modified, size)
             self._cache[obj.key] = obj
             yield obj.key
 

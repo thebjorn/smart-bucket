@@ -41,6 +41,9 @@ class LocalFileTree(FileTree):
             for file in sorted(files):
                 yield LocalFile(r / file, self)
 
+    def all(self):
+        yield from self
+
     @property
     def files(self):
         """Return a list of all the files in the tree.

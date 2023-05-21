@@ -1,6 +1,7 @@
+import datetime
 import os
 
-from sbucket.baseobj import File
+from sbucket.baseobj import File, get_timestamp
 
 
 def hash_file(fname):
@@ -35,6 +36,11 @@ class LocalFile(File):
     @property
     def hash(self) -> str:
         return hash_file(self._getpath())
+
+    @property
+    def last_modified(self) -> datetime.datetime:
+        return get_timestamp(self._getpath())
+        # return datetime.datetime.fromtimestamp(self.timestamp)
 
     @property
     def timestamp(self) -> int:

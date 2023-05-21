@@ -3,8 +3,10 @@ import json
 import os
 
 import boto3
+from devtools import debug
 from dkfileutils.path import Path
 
+from sbucket.cache import BucketObject
 from sbucket.filetree import LocalFileTree
 from sbucket.s3bucket import S3Bucket
 from sbucket.s3file import datetime_to_ns, S3File
@@ -39,12 +41,28 @@ def test_compare():
     assert bucket == t
 
 
+def test_bucket_hash():
+    b = S3Bucket(environment.S3_TEST_BUCKET_NAME)
+    bucket = b.bucket
+    for obj in bucket.objects.all():
+        # obj2 = b.s3.ObjectSummary(b.bucket_name, obj.key)
+        bobj = BucketObject(bucket, summary=obj)
+        # bobj = BucketObject(bucket, obj.key)
+        print(bobj.path, bobj.last_modified, bobj.hash)
+    assert 0
+    # assert [f.hash for f in bucket] == ['a', 'b']
+
+
 def test_xor():
     bucket = S3Bucket(environment.S3_TEST_BUCKET_NAME)
     # assert bucket.info() == []
     t = LocalFileTree(DATA / 'test1')
     # assert t.info() == []
-    assert t ^ bucket == {}
+    # assert t ^ bucket == {}
+    tmp = t.compare(bucket)
+    debug(tmp)
+    assert tmp == []
+    assert 0
     # 10.06 seconds
 
 
