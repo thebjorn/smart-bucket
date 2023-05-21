@@ -10,6 +10,8 @@ Welcome to smart-bucket's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+.. include:: ../README.rst
+.. include:: ./aws-config.rst
 .. include:: ./merging.rst
 .. include:: ./modules.rst
 

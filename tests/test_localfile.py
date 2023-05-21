@@ -1,5 +1,5 @@
 import os
-from sbucket.s3file import LocalFile
+from sbucket.localfile import LocalFile
 
 CURDIR = os.path.dirname(__file__)
 

@@ -1,10 +1,12 @@
-import abc
 import datetime
 import json
 import pytz
 import os
 import botocore
 import logging
+
+from sbucket.baseobj import File
+from sbucket.localfile import LocalFile
 
 log = logging.getLogger(__name__)
 
@@ -36,14 +38,6 @@ log = logging.getLogger(__name__)
 #     # Set the new security descriptor in the file
 #     win32security.SetFileSecurity(path, win32security.DACL_SECURITY_INFORMATION, sd_new)
 
-def hash_file(fname):
-    import hashlib
-    h = hashlib.md5()
-    with open(fname, 'rb', buffering=0) as f:
-        for b in iter(lambda: f.read(128 * 1024), b''):
-            h.update(b)
-    return h.hexdigest()
-
 
 def local_timezone():
     """Return the local timezone.
@@ -67,65 +61,6 @@ def get_timestamp(path) -> datetime.datetime:
     dt = datetime.datetime(dt.year, dt.month, dt.day, dt.hour, dt.minute,
                            dt.second)
     return tz.localize(dt)
-
-
-class File(abc.ABC):
-    def __init__(self, path: str) -> None:
-        super().__init__()
-        self.path: str = str(path)
-
-    def __str__(self):
-        return self.path
-
-    __repr__ = __str__
-
-    @property
-    @abc.abstractmethod
-    def exists(self):
-        pass
-
-    @property
-    def missing(self):
-        return not self.exists
-
-    @property
-    @abc.abstractmethod
-    def hash(self):
-        pass
-
-    @property
-    @abc.abstractmethod
-    def timestamp(self):
-        pass
-
-    @timestamp.setter
-    @abc.abstractmethod
-    def timestamp(self, timestamp):
-        pass
-
-
-class LocalFile(File):
-    def __init__(self, path, root=None) -> None:
-        if root is not None:
-            path = os.path.relpath(path, root)
-        super().__init__(path)
-
-    @property
-    def exists(self) -> bool:
-        return os.path.exists(self.path)
-
-    @property
-    def hash(self) -> str:
-        return hash_file(self.path)
-
-    @property
-    def timestamp(self) -> int:
-        s = os.stat(self.path)
-        return s.st_mtime_ns
-
-    @timestamp.setter
-    def timestamp(self, timestamp):
-        os.utime(self.path, ns=(timestamp, timestamp))
 
 
 class S3File(File):
@@ -175,10 +110,6 @@ class S3File(File):
         self._obj.download_file(self.path)
         localfile = LocalFile(self.path)
         localfile.timestamp = self.timestamp
-
-    def upload(self):
-        self.bucket.copy_to_s3(self.path)
-        self._exists = True
 
     def update_tags(self, tags):
         self._ensure_exists()

@@ -1,20 +1,19 @@
+import json
 import os
-from abc import ABC
+import textwrap
+from io import StringIO
 
 from dkfileutils.path import Path
+from yamldirs.yamldirs_cmd import directory2yaml
 
-from sbucket.s3file import LocalFile
-
-
-class FileTree(ABC):
-    def __init__(self, root) -> None:
-        super().__init__()
-        self.root = root
+from sbucket.baseobj import FileTree
+from sbucket.localfile import LocalFile
+from sbucket.utils import files2tree, tree2yaml
 
 
 class LocalFileTree(FileTree):
     def __init__(self, root) -> None:
-        super().__init__(root)
+        self.root = root
 
     @property
     def exists(self) -> bool:
@@ -23,16 +22,24 @@ class LocalFileTree(FileTree):
     def __str__(self):
         return self.root
 
-    def local_file(self, path):
-        return LocalFile(path)
+    # def __repr__(self):
+    #     return tree2yaml(files2tree(sorted(self)))
+
+    def upload(self, bucket):
+        with Path(self.root).cd():
+            for file in self:
+                file.upload(bucket)
+
+    def file(self, path):
+        return LocalFile(path, self)
 
     def __iter__(self):
         """Yield all the files in the tree.
         """
         for root, dirs, files in os.walk(self.root):
-            r = Path(root)
+            r = Path(root).relpath(self.root)
             for file in sorted(files):
-                yield LocalFile(r / file, self.root)
+                yield LocalFile(r / file, self)
 
     @property
     def files(self):
@@ -40,13 +47,15 @@ class LocalFileTree(FileTree):
         """
         return list(self)
 
-    def timestamp(self, path) -> int:
-        """Return the timestamp of the file at path in the S3 bucket.
-        """
-        return os.stat(path).st_mtime_ns
+    # not a dir-op
+    # def timestamp(self, path) -> int:
+    #     """Return the timestamp of the file at path in the S3 bucket.
+    #     """
+    #     return os.stat(path).st_mtime_ns
 
-    def contents(self, path) -> str:
-        """Return the contents of the file at path in the S3 bucket.
-        """
-        with open(path, 'r') as f:
-            return f.read()
+    # not a dir-op
+    # def contents(self, path) -> str:
+    #     """Return the contents of the file at path in the S3 bucket.
+    #     """
+    #     with open(path, 'r') as f:
+    #         return f.read()
